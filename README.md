@@ -1,4 +1,4 @@
-django-simple game
+#django-simple game
 
 A singleplayer game using the Django framework.
 
@@ -8,7 +8,7 @@ Nothing much, just Python 3+ and (ideally) virtualenv.
 
 How do I start it?
 
-Clone the repo, cd to the repo directory then run (again, ideally inside a virtualenv):
+#Clone the repo, cd to the repo directory then run (again, ideally inside a virtualenv):
 
 $ pip install -r requirements.txt
 

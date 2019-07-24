@@ -279,12 +279,16 @@ function hitBomb (player, bomb)
     /* tu ewentualnie ustawiasz jakąś animacje */
     $('#final-score').text(score); // Wrzycanie info do splasha
     $('#splash-info').fadeIn(250); // Pokazanie splasha
-    var form = $('#score-form'); // Złapanie forma
-    form.find('[name=score]').val(score); // Ustawienie punktów
-    form.find('[name=username]').val('{{ username }}'); // Ustawienie gracza - ale to możesz też ustalić w widoku gdzie przechwytujesz dane z formularza
-    setTimeout(function(){ // Submit po 3 sekundach
-        form.submit()
-    },3000);
+    var dataToSend = {
+        'score' : score
+    }
+    // Musisz zaimplementować widok odbierający dane pod adresem:
+    // "/url_z_obsługa_odbierania_danych" - oczywiście możesz to zmienić :)
+    // odbierasz dane tak jak z formularza ;) takiego pisanego z ręki jak na module 3
+    // zobacz np. https://materialy.coderslab.pl/build/PY_Presentations/v3.3/M_03_S_01_Django_1_dzien_2#/33
+    $.post('/url_z_obsługa_odbierania_danych',dataToSend,function(dataFromServer){
+        alert(dataFromServer); // to wyświetlasz to co zwróci serwer
+    });
 }
 
 </script>

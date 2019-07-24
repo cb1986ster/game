@@ -38,9 +38,15 @@ class FirstView(View):
 
 class GameView(View):
     def get(self, request):
+        # Tu trzeba zrobić formularz do zapisywania punktów na podstawie modelu
+        form = '<input name="score" type="text" /><input name="username" type="text" />'
+        # A tutaj wyłuskać jaki user jest zalogowany
+        username = 'someUser'
+        return render(request, "game.html", {'form':form,'username':username})
 
-        return render(request, "game.html")
-
+    def post(self, request):
+        ''' Zaimplementuj mnie! Tu odbierasz punkty! '''
+        return self.get(request)
 
 class MenuView(View):
     def get(self, request):

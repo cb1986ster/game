@@ -3,22 +3,82 @@
 <head>
     <meta charset="UTF-8" />
     <title>Simple Game</title>
-    <h1>
-        Game !!!
-    </h1>
-     <div class="col noPadding d-flex justify-content-end mb-2">
-        <a href="{% url 'add_rankings' %}"> <button type="submit">Dodaj Wynik</button></a></div>
     <script src="//cdn.jsdelivr.net/npm/phaser@3.11.0/dist/phaser.js"></script>
     <style type="text/css">
         body {
             margin: 0;
         }
+        #score-form {
+           /* Odkomentuj, aby ukryć formularz  */
+           /* display: none; */
+        }
+        #game-area {
+            text-align: center;;
+        }
+        #game-area > * {
+            display: inline-block;
+            padding: 0px;
+            background-color: black;
+            margin: 3px;
+            border-radius: 5px;
+            border: 4px solid black;
+        }
+        #splash-info {
+            display: none;
+            position: absolute;
+            z-index: 99999;
+            width: 400px;
+            height: 200px;
+            border: 8px solid rgba(255,0,0,0.5);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.7);
+            top: 50%;
+            left: 50%;
+            margin-left: -200px;
+            margin-top: -100px;
+            text-align: center;
+
+        }
     </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
 </head>
 <body>
+    <!-- to nie powinno znajdować się w head !!! -->
+    <!-- <h1>
+        Game !!!
+    </h1>
+    <div class="col noPadding d-flex justify-content-end mb-2">
+        <a href="{% url 'add_rankings' %}">
+            <button type="submit">Dodaj Wynik</button>
+        </a>
+    </div> -->
+    <!-- / to nie powinno znajdować się w head !!! -->
 
+
+    <div id="game-area"></div>
+
+    <!-- splash info -->
+    <div id="splash-info">
+        <h2>Your final score:</h2>
+        <h3 id="final-score"></h3>
+        <h4>Well done!</h4>
+    </div>
+    <!-- ten form będzie się wysyłać -->
+    <form method="post" id="score-form">
+        {% csrf_token %}
+        {{ form|safe }}
+    </form>
+    <!-- / ten form będzie się wysyłać -->
 <script type="text/javascript">
-
+/*
+    Przenieś to do jakiegoś zewnętrznego pliku, możesz też załadować to
+    tu przez include, zobacz https://docs.djangoproject.com/en/2.2/ref/templates/builtins/#include
+    :)
+ */
 var config = {
     type: Phaser.AUTO,
     width: 800 ,
@@ -34,7 +94,8 @@ var config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    parent: 'game-area'
 };
 
 var player;
@@ -135,6 +196,14 @@ function create ()
     this.physics.add.overlap(player, stars, collectStar, null, this);
 
     this.physics.add.collider(player, bombs, hitBomb, null, this);
+
+    // Łatwiej będzie przegrać
+    var bomb = bombs.create(16, 16, 'bomb');
+    bomb.setBounce(1);
+    bomb.setCollideWorldBounds(true);
+    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
+    bomb.allowGravity = false;
+
 }
 
 function update ()
@@ -206,6 +275,16 @@ function hitBomb (player, bomb)
     player.anims.play('turn');
 
     gameOver = true;
+
+    /* tu ewentualnie ustawiasz jakąś animacje */
+    $('#final-score').text(score); // Wrzycanie info do splasha
+    $('#splash-info').fadeIn(250); // Pokazanie splasha
+    var form = $('#score-form'); // Złapanie forma
+    form.find('[name=score]').val(score); // Ustawienie punktów
+    form.find('[name=username]').val('{{ username }}'); // Ustawienie gracza - ale to możesz też ustalić w widoku gdzie przechwytujesz dane z formularza
+    setTimeout(function(){ // Submit po 3 sekundach
+        form.submit()
+    },3000);
 }
 
 </script>
